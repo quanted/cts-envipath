@@ -1,7 +1,7 @@
 import json
 import copy
 import pandas as pd
-from Tree import Tree
+from tree import Tree
 
 
 if __name__ == "__main__":

@@ -40,7 +40,7 @@ class Link:
             if "target" in link:
                 self.target = link["target"]
 
-            self.get_rule()
+            #self.get_rule()
 
     def get_rule(self):
         if self.name is not None:

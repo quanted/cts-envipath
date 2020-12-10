@@ -2,8 +2,8 @@ import json
 import copy
 from typing import List
 from typing import TypeVar
-from Node import Node
-from Link import Link
+from .node import Node
+from .link import Link
 
 #PandasDataFrame = TypeVar('pandas.core.frame.DataFrame')
 
@@ -33,6 +33,9 @@ class Tree:
     def build_link_list(self, links):
         for idx in range(len(links)):
             link = Link(links[idx])
+            #rules = reaction['rules']
+            #rule = rules[0]['name']
+            #link.rule = rule       
             link.set_likelihood(self.df_paths)
             self.links.append(link)
 
