@@ -1,6 +1,5 @@
 import json
 import time
-import sys
 import logging
 import pandas as pd
 import requests
@@ -67,17 +66,21 @@ class CTSEnvipath:
 
             cts_envipath_tree = Tree(nodes, links, df_paths)
             cts_envipath_tree.build_tree()
+
+            return_val = json.dumps(tree.root_node, default=lambda o: o.__dict__)
             
 
         except Exception as e:
             msg = e.args[0]
             logging.warning(msg)
-            cts_envipath_tree = msg
+            return_val = msg
 
         finally:
-            return cts_envipath_tree
+            return return_val
         
 if __name__ == "__main__":
 
+    smiles = 'c1ccccc1'
     ctsenvipath = CTSEnvipath()
-    tree = ctsenvipath.get_envipath_tree('c1ccccc1')    
+    return_val = ctsenvipath.get_envipath_tree(smiles)
+    

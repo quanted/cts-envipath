@@ -4,11 +4,13 @@ class Link:
 
     def __init__(self, link=None):
         self.base_url = 'http://umbbd.ethz.ch/servlets/rule.jsp?rule='
-
-        self.rule = None
+        
         self.rule_url = None
         self.likelihood = None
+        self.rule_description = None
 
+        #These values come from the passed in link object
+        self.rule = None
         self.id = None
         self.idreaction = None
         self.multistep = None
@@ -33,6 +35,8 @@ class Link:
                 self.name = link["name"]
             if "pseudo" in link:
                 self.pseudo = link["pseudo"]
+            if "rule" in link:
+                self.rule = link["rule"]
             if "scenarios" in link:
                 self.scenarios = link["scenarios"]
             if "source" in link:
@@ -48,9 +52,11 @@ class Link:
             self.rule = tokens[-1] #Eawag's BBD rule number, in form of "btXXXX"
             self.rule_url = self.base_url + self.rule
 
-    def set_likelihood(self, df_paths):
+    def set_reaction_info(self, df_paths):
         #Not much we can do in this case
         if (self.rule is None) or (df_paths is None):
             return
 
         self.likelihood = df_paths.loc[self.rule]['Likelihood'] #Rule likelihood
+        self.rule_description = df_paths.loc[self.rule]['Description'] #Rule description
+        self.rule_url = self.base_url + self.rule  #Rule url

@@ -36,7 +36,7 @@ class Tree:
             #rules = reaction['rules']
             #rule = rules[0]['name']
             #link.rule = rule       
-            link.set_likelihood(self.df_paths)
+            link.set_reaction_info(self.df_paths)
             self.links.append(link)
 
     def find_source_links(self, node_num):
