@@ -67,13 +67,14 @@ class CTSEnvipath:
             cts_envipath_tree = Tree(nodes, links, df_paths)
             cts_envipath_tree.build_tree()
 
-            return_val = json.dumps(tree.root_node, default=lambda o: o.__dict__)
+            return_val = json.dumps(cts_envipath_tree.root_node, default=lambda o: o.__dict__)
             
 
         except Exception as e:
             msg = e.args[0]
             logging.warning(msg)
-            return_val = msg
+            err_msg = {"error" : msg}
+            return_val = json.dumps(err_msg)
 
         finally:
             return return_val
