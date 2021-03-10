@@ -14,17 +14,22 @@ INSTANCE_HOST = 'https://envipath.org/'
 class CTSEnvipath:
     def __init__(self):
         #We can pass this in or read from file if needed
+        #Package: EAWAG-BBD
         self.package_id = INSTANCE_HOST + 'package/' + '650babc9-9d68-4b73-9332-11972ca26f7b'
+                
 
-    def get_envipath_tree(self, smiles):
+    def get_envipath_tree(self, smiles, max_nodes, max_depth):
         try:
 
             ep = enviPath(INSTANCE_HOST)
 
+            #settings = ep.get_setting()
+            #print(settings)
+
             # Create package object
             p = Package(ep.requester, id=self.package_id)
             print("calling predict")
-            pw = p.predict(smiles, name='Pathway via REST', description='A pathway created via REST')
+            pw = p.predict(smiles, name='Pathway via REST', maxNodes=max_nodes, maxDepth=max_depth, description='A pathway created via REST')
             print("finished calling predict")
 
             json_retval = pw.get_json()
@@ -80,8 +85,8 @@ class CTSEnvipath:
             return return_val
         
 if __name__ == "__main__":
-
+        
     smiles = 'c1ccccc1'
     ctsenvipath = CTSEnvipath()
-    return_val = ctsenvipath.get_envipath_tree(smiles)
+    return_val = ctsenvipath.get_envipath_tree(smiles, 2, 2)
     
