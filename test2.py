@@ -12,9 +12,11 @@ def test():
     eP = enviPath(INSTANCE_HOST)
     smiles = 'c1ccccc1'
     p = Package(eP.requester,id='https://envipath.org/package/650babc9-9d68-4b73-9332-11972ca26f7b')
-    setting = Setting.create(eP, name='ctsd3n128',
-                    depth_limit=3, node_limit=128,
-                    packages=[p])
+    #setting = Setting.create(eP, name='ctsd3n128',
+    #                depth_limit=3, node_limit=128,
+    #                packages=[p])
+    setting_id = INSTANCE_HOST + 'setting/' + 'bf06f794-b04a-48af-8c0f-f94a59fd235d'
+    setting = Setting(eP.requester, id=setting_id)
 
     pw = p.predict(smiles, name='Pathway via REST', description='A pathway created via REST', setting=setting)
 
