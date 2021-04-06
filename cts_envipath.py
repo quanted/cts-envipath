@@ -16,20 +16,29 @@ class CTSEnvipath:
         #We can pass this in or read from file if needed
         #Package: EAWAG-BBD
         self.package_id = INSTANCE_HOST + 'package/' + '650babc9-9d68-4b73-9332-11972ca26f7b'
-                
+        self.settings = dict()
+        self.settings["ctsd1n16"] = INSTANCE_HOST + 'setting/' + 'bf06f794-b04a-48af-8c0f-f94a59fd235d'
+        self.settings["ctsd1n32"] = INSTANCE_HOST + 'setting/' + '05532922-1274-4752-a579-bf36d0b72b12'
+        self.settings["ctsd2n16"] = INSTANCE_HOST + 'setting/' + '945a3d6e-52bf-4475-bede-5bf81fe8bbc3'
+        self.settings["ctsd2n32"] = INSTANCE_HOST + 'setting/' + 'd0300ae9-f642-40f9-b72f-ba6a6466b596'
+        self.settings["ctsd2n64"] = INSTANCE_HOST + 'setting/' + 'a22b1109-fcdb-4d9e-a6af-744a5cd83044'
+        self.settings["ctsd3n32"] = INSTANCE_HOST + 'setting/' + 'e2d40d60-9c61-4808-af2d-03f02cdd0c61'
+        self.settings["ctsd3n64"] = INSTANCE_HOST + 'setting/' + '706da657-3b6b-47de-9cb8-dfe2c0b48a3b'
+        self.settings["ctsd3n128"] = INSTANCE_HOST + 'setting/' + 'b3c4ddca-053d-4c2c-8dfc-42e1a5d89e4d'
 
-    def get_envipath_tree(self, smiles, max_nodes, max_depth):
+
+    def get_envipath_tree(self, smiles):
         try:
 
             ep = enviPath(INSTANCE_HOST)
 
-            #settings = ep.get_setting()
-            #print(settings)
+            setting_id = self.settings["ctsd2n32"]
+            setting = Setting(ep.requester, id=setting_id)
 
             # Create package object
             p = Package(ep.requester, id=self.package_id)
             print("calling predict")
-            pw = p.predict(smiles, name='Pathway via REST', maxNodes=max_nodes, maxDepth=max_depth, description='A pathway created via REST')
+            pw = p.predict(smiles, name='Pathway via REST', description='A pathway created via REST', setting=setting)
             print("finished calling predict")
 
             json_retval = pw.get_json()
@@ -88,5 +97,5 @@ if __name__ == "__main__":
         
     smiles = 'c1ccccc1'
     ctsenvipath = CTSEnvipath()
-    return_val = ctsenvipath.get_envipath_tree(smiles, 2, 2)
+    return_val = ctsenvipath.get_envipath_tree(smiles)
     
