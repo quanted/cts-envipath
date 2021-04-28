@@ -27,18 +27,18 @@ class CTSEnvipath:
         self.settings["ctsd3n128"] = INSTANCE_HOST + 'setting/' + 'b3c4ddca-053d-4c2c-8dfc-42e1a5d89e4d'
 
 
-    def get_envipath_tree(self, smiles, max_nodes, max_depth):
+    def get_envipath_tree(self, smiles):
         try:
 
             ep = enviPath(INSTANCE_HOST)
 
-            #settings = ep.get_setting()
-            #print(settings)
+            setting_id = self.settings["ctsd2n32"]
+            setting = Setting(ep.requester, id=setting_id)
 
             # Create package object
             p = Package(ep.requester, id=self.package_id)
             print("calling predict")
-            pw = p.predict(smiles, name='Pathway via REST', maxNodes=max_nodes, maxDepth=max_depth, description='A pathway created via REST')
+            pw = p.predict(smiles, name='Pathway via REST', description='A pathway created via REST', setting=setting)
             print("finished calling predict")
 
             json_retval = pw.get_json()
@@ -97,5 +97,5 @@ if __name__ == "__main__":
         
     smiles = 'c1ccccc1'
     ctsenvipath = CTSEnvipath()
-    return_val = ctsenvipath.get_envipath_tree(smiles, 2, 2)
+    return_val = ctsenvipath.get_envipath_tree(smiles)
     
