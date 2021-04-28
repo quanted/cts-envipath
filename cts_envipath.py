@@ -15,30 +15,34 @@ class CTSEnvipath:
     def __init__(self):
         #We can pass this in or read from file if needed
         #Package: EAWAG-BBD
+        #Package: Anonymous
         self.package_id = INSTANCE_HOST + 'package/' + '650babc9-9d68-4b73-9332-11972ca26f7b'
+
         self.settings = dict()
-        self.settings["ctsd1n16"] = INSTANCE_HOST + 'setting/' + 'bf06f794-b04a-48af-8c0f-f94a59fd235d'
-        self.settings["ctsd1n32"] = INSTANCE_HOST + 'setting/' + '05532922-1274-4752-a579-bf36d0b72b12'
-        self.settings["ctsd2n16"] = INSTANCE_HOST + 'setting/' + '945a3d6e-52bf-4475-bede-5bf81fe8bbc3'
-        self.settings["ctsd2n32"] = INSTANCE_HOST + 'setting/' + 'd0300ae9-f642-40f9-b72f-ba6a6466b596'
-        self.settings["ctsd2n64"] = INSTANCE_HOST + 'setting/' + 'a22b1109-fcdb-4d9e-a6af-744a5cd83044'
-        self.settings["ctsd3n32"] = INSTANCE_HOST + 'setting/' + 'e2d40d60-9c61-4808-af2d-03f02cdd0c61'
-        self.settings["ctsd3n64"] = INSTANCE_HOST + 'setting/' + '706da657-3b6b-47de-9cb8-dfe2c0b48a3b'
-        self.settings["ctsd3n128"] = INSTANCE_HOST + 'setting/' + 'b3c4ddca-053d-4c2c-8dfc-42e1a5d89e4d'
+        self.settings["cts-d1-n16"] = INSTANCE_HOST + 'setting/' + 'e24258e2-f426-41c2-bdbb-b658c41e60c1'
+        self.settings["cts-d1-n32"] = INSTANCE_HOST + 'setting/' + 'd243e2c0-d40f-4601-a8c0-103e563f4a89'
+        self.settings["cts-d2-n16"] = INSTANCE_HOST + 'setting/' + '709fe0e0-43d7-4a70-a426-402fea69e7ee'
+        self.settings["cts-d2-n32"] = INSTANCE_HOST + 'setting/' + '91017264-5132-4abb-aa03-885f127bf526'
+        self.settings["cts-d2-n64"] = INSTANCE_HOST + 'setting/' + 'fa7cee2e-a6af-4023-986c-afeff46ec940'
+        self.settings["cts-d3-n16"] = INSTANCE_HOST + 'setting/' + '1931a08d-9f2f-4d50-a4e9-c9370c44dbbd'
+        self.settings["cts-d3-n32"] = INSTANCE_HOST + 'setting/' + '17970a8f-aafc-499a-aa16-50904c682276'
+        self.settings["cts-d3-n64"] = INSTANCE_HOST + 'setting/' + 'b84c521c-a9cf-4f91-8eff-fd990edc4c34'
+        self.settings["cts-d3-n128"] = INSTANCE_HOST + 'setting/' + '069ecbcf-1eb7-4ea5-8e53-08df41e6a871'
 
 
-    def get_envipath_tree(self, smiles):
+    def get_envipath_tree(self, smiles, setting_id):
         try:
 
             ep = enviPath(INSTANCE_HOST)
+            ep.login('kurtw555', '9Gr0uper0')
 
-            setting_id = self.settings["ctsd2n32"]
-            setting = Setting(ep.requester, id=setting_id)
-
-            # Create package object
-            p = Package(ep.requester, id=self.package_id)
+            # Get package object
+            p = ep.get_package(self.package_id)
             print("calling predict")
-            pw = p.predict(smiles, name='Pathway via REST', description='A pathway created via REST', setting=setting)
+            setting_url = self.settings[setting_id]
+            setting = Setting(ep.requester, id=setting_url)
+            #setting = ep.get_setting(self.settings[setting_id])
+            pw = p.predict(smiles, name='Pathway via REST', setting=setting, description='A pathway created via REST')
             print("finished calling predict")
 
             json_retval = pw.get_json()
@@ -49,10 +53,12 @@ class CTSEnvipath:
                 idx = idx + 1
                 print("step: " + str(idx))
                 time.sleep(10)
-                json_retval = pw.get_json()                
+                json_retval = pw.get_json()
             
             nodes = json_retval['nodes']
             links = json_retval['links']
+            print("NumNode: " + str(len(nodes)))
+            print("NumLinks: " + str(len(links)))
 
             headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
             for link in links:
@@ -97,5 +103,6 @@ if __name__ == "__main__":
         
     smiles = 'c1ccccc1'
     ctsenvipath = CTSEnvipath()
-    return_val = ctsenvipath.get_envipath_tree(smiles)
+    setting_id = 'cts-d3-n64'
+    return_val = ctsenvipath.get_envipath_tree(smiles, setting_id)
     
