@@ -44,12 +44,9 @@ def run_envipath():
 	post_dict = request.get_json()
 	logging.warning("POST: {}".format(post_dict))
 	smiles = post_dict["smiles"]
-	
-	# TODO: Use gen_limit to determine setting_id:
 	gen_limit = post_dict.get("gen_limit", 1)
-	setting_id = 'cts-d1-n16'
 
-	tree_dict = ctsenvipath.get_envipath_tree(smiles, setting_id)
+	tree_dict = ctsenvipath.get_envipath_tree(smiles, gen_limit)
 
 	return jsonify({"status": True, "data": json.loads(tree_dict)})
 

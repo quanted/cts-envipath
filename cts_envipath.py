@@ -29,12 +29,25 @@ class CTSEnvipath:
         self.settings["cts-d3-n64"] = INSTANCE_HOST + 'setting/' + 'b84c521c-a9cf-4f91-8eff-fd990edc4c34'
         self.settings["cts-d3-n128"] = INSTANCE_HOST + 'setting/' + '069ecbcf-1eb7-4ea5-8e53-08df41e6a871'
 
+    def set_setting_id(self, gen_limit):
+        """
+        Gets proper setting based on generation limit.
+        """
+        if gen_limit == 1:
+            return "cts-d1-n32"
+        elif gen_limit == 2:
+            return "cts-d2-n64"
+        else:
+            logging.warning("gen_limit < 1 or > 2. defaulting to cts-d2-n64")
+            return "cts-d2-n64"
 
-    def get_envipath_tree(self, smiles, setting_id):
+    def get_envipath_tree(self, smiles, gen_limit):
         try:
 
             ep = enviPath(INSTANCE_HOST)
             ep.login('kurtw555', '9Gr0uper0')
+
+            setting_id = self.set_setting_id(gen_limit)
 
             # Get package object
             p = ep.get_package(self.package_id)
