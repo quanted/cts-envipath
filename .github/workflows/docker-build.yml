@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: quanted/cts-envipath
+  IMAGE_NAME: kurtw555/cts-envipath
 
 jobs:
   build-and-push-image:
