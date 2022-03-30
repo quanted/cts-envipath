@@ -6,13 +6,13 @@ services:
   envipath:
     restart: unless-stopped
     build:
-      context: ../
-      dockerfile: ./docker/Dockerfile
-    image: quanted/cts-envipath
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/kurtw555/cts-envipath:dev-kube
     container_name: envipath
     ports:
       - "5003:5003"
     environment:
       - HOSTNAME=docker
     volumes:
-      - ../:/src/
+      - .:/src/
