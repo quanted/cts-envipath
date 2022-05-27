@@ -16,3 +16,5 @@ services:
       - HOSTNAME=docker
     volumes:
       - ../:/src/
+    env_file:
+      - ./.env
