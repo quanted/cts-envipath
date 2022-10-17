@@ -3,6 +3,7 @@ import time
 import logging
 import pandas as pd
 import requests
+import os
 from pprint import pprint
 from enviPath_python.enviPath import *
 from enviPath_python.objects import *
@@ -38,14 +39,18 @@ class CTSEnvipath:
         elif gen_limit == 2:
             return "cts-d2-n64"
         else:
-            logging.warning("gen_limit < 1 or > 2. defaulting to cts-d2-n64")
+            logging.warning("gen_limit < 1 or > 2. defaulting to cts-d2-n64") 
             return "cts-d2-n64"
 
     def get_envipath_tree(self, smiles, gen_limit):
         try:
 
+            #These are for the enviPath user account
+            username = os.environ['USERNAME']
+            pwd = os.environ['PASSWORD']
+
             ep = enviPath(INSTANCE_HOST)
-            ep.login('kurtw555', '9Gr0uper0')
+            ep.login(username, pwd)
 
             setting_id = self.set_setting_id(gen_limit)
 
