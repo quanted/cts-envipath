@@ -13,6 +13,12 @@ WORKDIR /src
 
 RUN pip install -r requirements.txt
 
+RUN rm -rf \
+	/root/.cache/pip \
+	/usr/local/lib/python3.10/site-packages/pip \
+	/usr/local/bin/pip \
+	/usr/local/lib/python3.10/site-packages/pip-23.0.1.dist-info
+
 RUN chown -R $APP_USER:$APP_USER /src
 
 USER $APP_USER
