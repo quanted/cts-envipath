@@ -1,5 +1,4 @@
-# FROM python:3.9-alpine
-FROM python:3.10.2-alpine
+FROM python:3.10.12-alpine
 
 ENV APP_USER=www-data
 

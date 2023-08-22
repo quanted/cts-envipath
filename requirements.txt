@@ -1,4 +1,4 @@
-flask
-pandas
-requests
-waitress
+flask==2.3.3
+pandas==2.0.3
+requests==2.31.0
+waitress==2.1.2
