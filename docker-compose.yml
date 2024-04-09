@@ -9,7 +9,8 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ghcr.io/kurtw555/cts-envipath:dev-kube
-    container_name: envipath
+    # image: cts-envipath
+    container_name: cts-envipath
     ports:
       - "5003:5003"
     environment:

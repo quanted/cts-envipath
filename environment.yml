@@ -1,0 +1,9 @@
+name: cts
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - flask=3.0.3
+  - pandas=2.2.1
+  - requests=2.31.0
+  - waitress=3.0.0
