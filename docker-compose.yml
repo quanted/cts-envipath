@@ -5,10 +5,10 @@ services:
   # envipath services
   envipath:
     restart: unless-stopped
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: ghcr.io/quanted/cts-envipath:dev-kube
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: ghcr.io/quanted/cts-envipath:dev
     # image: cts-envipath
     container_name: cts-envipath
     ports:
