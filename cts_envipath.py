@@ -1,3 +1,7 @@
+from enviPath_python.enviPath import enviPath
+from enviPath_python.objects import Pathway
+from enviPath_python.objects import Setting
+from envipath_tree.tree import Tree
 import json
 import time
 import logging
@@ -5,122 +9,112 @@ import pandas as pd
 import requests
 import os
 from pprint import pprint
-from enviPath_python.enviPath import *
-from enviPath_python.objects import *
-from envipath_tree.tree import Tree
 
-# Define the instance to use
-INSTANCE_HOST = 'https://envipath.org/'
 
 class CTSEnvipath:
     def __init__(self):
-        #We can pass this in or read from file if needed
-        #Package: EAWAG-BBD
-        #Package: Anonymous
-        self.package_id = INSTANCE_HOST + 'package/' + '650babc9-9d68-4b73-9332-11972ca26f7b'
+        self.INSTANCE_HOST = 'https://envipath.org/'
 
-        self.settings = dict()
-        self.settings["cts-d1-n16"] = INSTANCE_HOST + 'setting/' + 'e24258e2-f426-41c2-bdbb-b658c41e60c1'
-        self.settings["cts-d1-n32"] = INSTANCE_HOST + 'setting/' + 'd243e2c0-d40f-4601-a8c0-103e563f4a89'
-        self.settings["cts-d2-n16"] = INSTANCE_HOST + 'setting/' + '709fe0e0-43d7-4a70-a426-402fea69e7ee'
-        self.settings["cts-d2-n32"] = INSTANCE_HOST + 'setting/' + '91017264-5132-4abb-aa03-885f127bf526'
-        self.settings["cts-d2-n64"] = INSTANCE_HOST + 'setting/' + 'fa7cee2e-a6af-4023-986c-afeff46ec940'
-        self.settings["cts-d3-n16"] = INSTANCE_HOST + 'setting/' + '1931a08d-9f2f-4d50-a4e9-c9370c44dbbd'
-        self.settings["cts-d3-n32"] = INSTANCE_HOST + 'setting/' + '17970a8f-aafc-499a-aa16-50904c682276'
-        self.settings["cts-d3-n64"] = INSTANCE_HOST + 'setting/' + 'b84c521c-a9cf-4f91-8eff-fd990edc4c34'
-        self.settings["cts-d3-n128"] = INSTANCE_HOST + 'setting/' + '069ecbcf-1eb7-4ea5-8e53-08df41e6a871'
-
-    def set_setting_id(self, gen_limit):
-        """
-        Gets proper setting based on generation limit.
-        """
-        if gen_limit == 1:
-            return "cts-d1-n32"
-        elif gen_limit == 2:
-            return "cts-d2-n64"
-        else:
-            logging.warning("gen_limit < 1 or > 2. defaulting to cts-d2-n64") 
-            return "cts-d2-n64"
-
-    def get_envipath_tree(self, smiles, gen_limit):
-        try:
-
-            #These are for the enviPath user account
-            username = os.environ['USERNAME']
-            pwd = os.environ['PASSWORD']
-
-            ep = enviPath(INSTANCE_HOST)
-            ep.login(username, pwd)
-
-            setting_id = self.set_setting_id(gen_limit)
-
-            # Get package object
-            p = ep.get_package(self.package_id)
-            print("calling predict")
-            setting_url = self.settings[setting_id]
-            setting = Setting(ep.requester, id=setting_url)
-            #setting = ep.get_setting(self.settings[setting_id])
-            pw = p.predict(smiles, name='Pathway via REST', setting=setting, description='A pathway created via REST')
-            print("finished calling predict")
-
-            json_retval = pw.get_json()
-            idx = 0
-            # Loop until completed flag switches
-            while json_retval['completed'] == 'false':
-                # Sleep for 10 seconds
-                idx = idx + 1
-                print("step: " + str(idx))
-                time.sleep(10)
-                json_retval = pw.get_json()
-            
-            nodes = json_retval['nodes']
-            links = json_retval['links']
-            print("NumNode: " + str(len(nodes)))
-            print("NumLinks: " + str(len(links)))
-
-            headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
-            for link in links:
-                if link['pseudo'] == False:
-                    idreaction = link['idreaction']
-                    response = requests.get(idreaction, headers=headers)
-                    reaction = response.text
-                                    
-                    reaction = response.json()
-                    rules = reaction['rules']
-                    rule = rules[0]['name']
-                    link["rule"] = rule         
-                    #with open("link" + ".json", "w") as text_file:
-                    #    text_file.write(json.dumps(link)) 
-
-            retval = json.dumps(json_retval)
-            envipath_data = retval.replace("'", '"')
-            #pprint(envipath_data)
-
-            #with open(smiles + ".json", "w") as text_file:
-            #    text_file.write(retval)
-
-            # Load dataframe of eawag rules called "paths"
-            df_paths = pd.read_pickle('paths.pkl')
-
-            cts_envipath_tree = Tree(nodes, links, df_paths)
-            cts_envipath_tree.build_tree()
-
-            return_val = json.dumps(cts_envipath_tree.root_node, default=lambda o: o.__dict__)
-            
-
-        except Exception as e:
-            msg = e.args[0]
-            logging.warning(msg)
-            err_msg = {"error" : msg}
-            return_val = json.dumps(err_msg)
-
-        finally:
-            return return_val
+    def get_envipath_tree(self, smiles):
+        # try:
+        # #These are for the enviPath user account
+        # username = os.environ['USERNAME']
+        # pwd = os.environ['PASSWORD']
         
+        eP = enviPath(self.INSTANCE_HOST)
+
+        eP.login(os.getenv("CTS_ENVIPATH_USER"), os.getenv("CTS_ENVIPATH_PASSWORD"))
+        
+        # obtain the currently logged in user
+        me = eP.who_am_i()
+
+        pkg_bbd = eP.get_package('https://envipath.org/package/32de3cf4-e3e6-4168-956e-32fa5ddb0ce1')
+        pkg_sludge = eP.get_package('https://envipath.org/package/7932e576-03c7-4106-819d-fe80dc605b8a')
+        pkg_soil = eP.get_package('https://envipath.org/package/5882df9c-dae1-4d80-a40e-db4724271456')
+
+        packages = [pkg_bbd, pkg_sludge, pkg_soil]
+        setting = Setting.create(eP, packages=packages, name='cts')
+
+        # get the package the pathway should be stored in
+        pkg = me.get_default_package()
+
+        # will trigger the pathway prediction
+        pw = Pathway.create(pkg, smiles='c1ccccc1', setting=setting)
+        #pw = pkg_bbd.predict('c1ccccc1')
+        #pw = Pathway.create(pkg_bbd, smiles='c1ccccc1')
+
+
+        # wait until the prediction finished
+        while pw.is_running():
+            print("Sleeping for three secs...")
+            time.sleep(3)
+
+        # check result
+        if pw.has_failed():
+            raise Exception("enviPath prediction failed")
+        
+        json_retval = pw.get_json()
+        nodes = json_retval['nodes']
+        links = json_retval['links']
+        
+        print("NumNode: " + str(len(nodes)))
+        print("NumLinks: " + str(len(links)))
+
+
+        print("JSON: {}".format(json_retval))
+
+
+        print("Get nodes: {}".format(pw.get_nodes()))
+
+        headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
+        for link in links:
+            if link['pseudo'] == False:
+                idreaction = link['idreaction']
+
+                # Method 1: Original way to set link rules.
+                # NOTE: Returning 401 (10/30/24)
+                # response = requests.get(idreaction, headers=headers)
+                # reaction = response.text                                
+                # reaction = response.json()
+                # print("Reaction: {}".format(reaction))
+                # rules = reaction['rules']
+                # rule = rules[0]['name']
+                # link["rule"] = rule         
+
+                # Method 2: New atttempt at setting link rules. Throwing KeyError in pandas.
+                # reaction = eP.get_reaction(idreaction)
+                # link["rule"] = reaction.name
+
+                # Method 3: Not setting the link rules returns a tree but is probably
+                # missing info (like the rule/reaction/pathway names).
+
+                retval = json.dumps(json_retval)
+                envipath_data = retval.replace("'", '"')
+
+                # Load dataframe of eawag rules called "paths"
+                df_paths = pd.read_pickle('paths.pkl')
+
+                cts_envipath_tree = Tree(nodes, links, df_paths)
+                cts_envipath_tree.build_tree()
+
+                return_val = json.dumps(cts_envipath_tree.root_node, default=lambda o: o.__dict__)
+                    
+        return return_val
+
+        # except Exception as e:
+        #     msg = e.args[0]
+        #     logging.warning(msg)
+        #     err_msg = {"error" : msg}
+        #     return_val = json.dumps(err_msg)
+
+        # finally:
+        #     return return_val
+    
 if __name__ == "__main__":
         
     smiles = 'c1ccccc1'
     ctsenvipath = CTSEnvipath()
-    setting_id = 'cts-d3-n64'
-    return_val = ctsenvipath.get_envipath_tree(smiles, setting_id)
-    
+    #setting_id = 'cts-d3-n64'
+    return_val = ctsenvipath.get_envipath_tree(smiles, )
+
+    print("Tree structure: {}".format(return_val))

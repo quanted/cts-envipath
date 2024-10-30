@@ -1,4 +1,4 @@
-# Copyright 2020 enviPath UG & Co. KG
+# Copyright 2023 enviPath UG & Co. KG
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 # documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -14,81 +14,28 @@
 # CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from collections import defaultdict
-from enviPath_python.objects import Pathway, Setting
+from enviPath_python.objects import Setting
 
 
-class MultiGenUtils(object):
+class NonPersistent(object):
+    from enviPath_python.enviPath import enviPath
 
-    @staticmethod
-    def evaluate(pathway: Pathway, setting: Setting):
+    def __init__(self, eP: enviPath):
+        self.eP = eP
+
+    def predict(self, setting: Setting, smiles: str) -> dict:
         """
-        Takes an pathway and uses the setting to predict a pathway with the exact same root node and compares
-        the resulting pathway against the provided one.
-        :param pathway: The pathway that is tried to predict.
-        :param setting: The setting used for prediction
+        Performs a pathway prediction for a given smiles and settings
+
+        :param setting: a Setting object to be used for the pathway prediction
+        :type setting: enviPath_python.objects.Setting
+        :param smiles: the string of the molecule whose pathway wants to be predicted
+        :type smiles: str
         :return:
         """
-        # TODO
-        pass
-
-    @staticmethod
-    def assemble_upsream(pathway: Pathway) -> dict:
-        res = defaultdict(set)
-        for edge in pathway.get_edges():
-            res[edge.get_end_nodes].add(edge.get_start_nodes())
-        return res
-
-    @staticmethod
-    def assemble_eval_weights(pathway: Pathway) -> defaultdict[set]:
-        res = defaultdict(lambda x: 1)
-        for node in pathway.get_nodes():
-            res[node] = 1 / 2 ** node.get_depth()
-        return res
-
-    @staticmethod
-    def compare_pathways(pred: Pathway, data: Pathway):
-        correct_ndoes = set()
-        incorrect_nodes = set()
-        correct_edges = set()
-        incorrect_edges = set()
-
-        pred_upstream = MultiGenUtils.assemble_upsream(pred)
-        pred_eval_weights = MultiGenUtils.assemble_eval_weights(pred)
-        data_upstream = MultiGenUtils.assemble_upsream(data)
-        data_eval_weights = MultiGenUtils.assemble_eval_weights(data)
-
-        tp_pred = 0.0
-        tp_data = 0.0
-        fp = 0.0
-        fn = 0.0
-
-        for node, outgoing_nodes in data_upstream.items():
-            if node in pred_upstream:
-                if node.get_depth() == 1:
-                    # No upstream nodes available as this is the root
-                    continue
-                else:
-                    if data_upstream[node].intersection(pred_upstream[node]):
-                        correct_ndoes.add(node)
-                        for edge in data.get_edges():
-                            if node in edge.get_end_nodes:
-                                correct_edges.add(edge)
-
-                        tp_pred = tp_pred + pred_eval_weights[node]
-                    else:  # No overlap
-                        # TODO duplicate
-                        fn = fn + pred_eval_weights[node]
-                        incorrect_nodes.add(node)
-                        for edge in data.get_edges():
-                            if node in edge.get_end_nodes:
-                                incorrect_edges.add(edge)
-            else:
-                # TODO duplicate
-                fn = fn + pred_eval_weights[node]
-                incorrect_nodes.add(node)
-                for edge in data.get_edges():
-                    if node in edge.get_end_nodes:
-                        incorrect_edges.add(edge)
-
-        return tp_pred, tp_data, fp, fn
+        params = {
+            'hiddenMethod': 'predict',
+            'smiles': smiles,
+            'settingUri': setting.id,
+        }
+        return self.eP.requester.get_request('{}{}'.format(self.eP.BASE_URL, 'util'), params=params).json()
