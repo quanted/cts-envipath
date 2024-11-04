@@ -15,7 +15,7 @@ class CTSEnvipath:
     def __init__(self):
         self.INSTANCE_HOST = 'https://envipath.org/'
 
-    def get_envipath_tree(self, smiles):
+    def get_envipath_tree(self, smiles, gen_limit=None):
         # try:
         # #These are for the enviPath user account
         # username = os.environ['USERNAME']
@@ -23,7 +23,7 @@ class CTSEnvipath:
         
         eP = enviPath(self.INSTANCE_HOST)
 
-        eP.login(os.getenv("CTS_ENVIPATH_USER"), os.getenv("CTS_ENVIPATH_PASSWORD"))
+        eP.login(os.getenv("CTS_ENVIPATH_USERNAME"), os.getenv("CTS_ENVIPATH_PASSWORD"))
         
         # obtain the currently logged in user
         me = eP.who_am_i()
@@ -39,7 +39,10 @@ class CTSEnvipath:
         pkg = me.get_default_package()
 
         # will trigger the pathway prediction
-        pw = Pathway.create(pkg, smiles='c1ccccc1', setting=setting)
+        # pw = Pathway.create(pkg_bbd, smiles=smiles, setting=setting)
+        pw = Pathway.create(pkg, smiles=smiles, setting=setting)
+
+
         #pw = pkg_bbd.predict('c1ccccc1')
         #pw = Pathway.create(pkg_bbd, smiles='c1ccccc1')
 
@@ -56,15 +59,6 @@ class CTSEnvipath:
         json_retval = pw.get_json()
         nodes = json_retval['nodes']
         links = json_retval['links']
-        
-        print("NumNode: " + str(len(nodes)))
-        print("NumLinks: " + str(len(links)))
-
-
-        print("JSON: {}".format(json_retval))
-
-
-        print("Get nodes: {}".format(pw.get_nodes()))
 
         headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
         for link in links:
