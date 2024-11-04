@@ -28,6 +28,8 @@ class CTSEnvipath:
         # obtain the currently logged in user
         me = eP.who_am_i()
 
+        logging.warning("Who am i: {}".format(me))
+
         pkg_bbd = eP.get_package('https://envipath.org/package/32de3cf4-e3e6-4168-956e-32fa5ddb0ce1')
         pkg_sludge = eP.get_package('https://envipath.org/package/7932e576-03c7-4106-819d-fe80dc605b8a')
         pkg_soil = eP.get_package('https://envipath.org/package/5882df9c-dae1-4d80-a40e-db4724271456')
