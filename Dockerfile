@@ -15,7 +15,7 @@ COPY . /src/
 
 WORKDIR /src
 
-USER $APP_USER
+# USER $APP_USER
 
 # RUN pip install -r requirements.txt
 RUN micromamba create -n $CONDA_ENV -c conda-forge python=3.10
