@@ -33,7 +33,7 @@ class CTSEnvipath:
         pkg_soil = eP.get_package('https://envipath.org/package/5882df9c-dae1-4d80-a40e-db4724271456')
 
         packages = [pkg_bbd, pkg_sludge, pkg_soil]
-        setting = Setting.create(eP, packages=packages, name='cts')
+        setting = Setting.create(eP, packages=packages, name='cts', depth_limit=gen_limit)
 
         # get the package the pathway should be stored in
         pkg = me.get_default_package()

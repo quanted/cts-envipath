@@ -42,7 +42,6 @@ def run_envipath():
 	Calls their external API and polls status to get results.
 	"""
 	post_dict = request.get_json()
-	logging.warning("POST: {}".format(post_dict))
 	smiles = post_dict["smiles"]
 	gen_limit = post_dict.get("gen_limit", 1)
 
