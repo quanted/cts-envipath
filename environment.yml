@@ -5,7 +5,7 @@ channels:
 dependencies:
   - flask=3.0.3
   - pandas=2.2.1
-  - requests=2.32.0
-  - waitress=3.0.1
+  - requests=2.32.3
+  - waitress=3.0.2
   - pip:
     - enviPath-python
