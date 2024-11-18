@@ -19,7 +19,7 @@ WORKDIR /src
 # USER $APP_USER
 
 # RUN pip install -r requirements.txt
-RUN micromamba create -n $CONDA_ENV -c conda-forge python=3.10
+RUN micromamba create -n $CONDA_ENV -c conda-forge python=3.11
 RUN micromamba install -n $CONDA_ENV -f /src/environment.yml
 RUN micromamba clean -p -t -l --trash -y
 
