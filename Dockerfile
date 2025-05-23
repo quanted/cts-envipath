@@ -50,7 +50,7 @@ USER root
 # # ------------------------- #
 
 
-RUN chown -R $APP_USER:$APP_USER /src
+# RUN chown -R $APP_USER:$APP_USER /src
 
 # USER $APP_USER
 
