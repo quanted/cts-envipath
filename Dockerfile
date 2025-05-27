@@ -50,10 +50,10 @@ USER root
 # # ------------------------- #
 
 
-# RUN chown -R $APP_USER:$APP_USER /src
+RUN chown -R $APP_USER:$APP_USER /src
 
-# USER $APP_USER
+USER $APP_USER
 
 # ENV START_COMMAND="micromamba run -n $CONDA_ENV waitress-serve --port=5003 cts_envipath_flask:app"
-CMD ["micromamba", "run", "-n", "$CONDA_ENV", "waitress-serve", "--port=5003", "cts_envipath_flask:app"]
+CMD ["micromamba", "run", "-n", "pyenv", "waitress-serve", "--port=5003", "cts_envipath_flask:app"]
 # CMD ["waitress-serve", "--port=5003", "cts_envipath_flask:app"]
