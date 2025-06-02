@@ -2,7 +2,7 @@ version: '3.8'
 services:
   envipath:
     restart: unless-stopped
-    image: ghcr.io/quanted/cts-envipath:dev-a19fb46f60e6ac1da1a53382fc9cc1bc74d87d6b
+    image: ghcr.io/quanted/cts-envipath:dev-5cf9dbfb406237a065a137c712b1e88e17f7b779
     container_name: cts-envipath
     ports:
       - "5003:5003"
