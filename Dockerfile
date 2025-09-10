@@ -9,8 +9,10 @@ USER root
 
 RUN adduser -S $APP_USER -G $APP_USER
 
-RUN apk update && \
-	apk add gcc g++ make python3-dev
+RUN apk add --update --no-cache \
+	gcc \
+	g++ \
+	make
 
 COPY . /src/
 
